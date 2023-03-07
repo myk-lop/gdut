@@ -1,6 +1,12 @@
 const unitTestingTask = require("../unitTestingTask");
 const { lang } = require("../unitTestingTask");
 
+describe("Testing Timezone", () => {
+  it("should always be UTC+2", () => {
+    expect(new Date().getTimezoneOffset()).toBe(-120);
+  });
+});
+
 describe("unitTestingTask lang function", () => {
   afterEach(() => lang("en"));
 
@@ -24,59 +30,57 @@ describe("unitTestingTask lang function", () => {
 describe("unitTestingTask function", () => {
   const mockedDate =
     "Mon Jan 23 2023 05:09:03:0023 GMT+0200 (Eastern European Standard Time)";
-  const mockedFormat = "DD-MM-YYYY";
+  const formatStub = "DD-MM-YYYY";
 
   describe("called with wrong arguments", () => {
     const wrongFormatArgumentTypeMessage = "Argument `format` must be a string";
     const incorrectDateArgumentTypeMessage =
       "Argument `date` must be instance of Date or Unix Timestamp or ISODate String";
 
-    it(`should trow a TypeError "${wrongFormatArgumentTypeMessage}" if first "format" argument is a number`, () => {
+    it(`should trow a TypeError "${wrongFormatArgumentTypeMessage}" if first "format" argument is not a string`, () => {
       expect(() => unitTestingTask(12, mockedDate)).toThrow(
         new TypeError(wrongFormatArgumentTypeMessage)
       );
     });
 
-    it(`should trow a TypeError "${wrongFormatArgumentTypeMessage}" if first "format" argument is a undefined`, () => {
-      expect(() => unitTestingTask(undefined, mockedDate)).toThrow(
-        new TypeError(wrongFormatArgumentTypeMessage)
-      );
+    it(`should trow a TypeError if first "format" argument is a number`, () => {
+      expect(() => unitTestingTask(12, mockedDate)).toThrow(TypeError);
     });
 
-    it(`should trow a TypeError "${wrongFormatArgumentTypeMessage}" if first "format" argument is an object`, () => {
-      expect(() => unitTestingTask({}, mockedDate)).toThrow(
-        new TypeError(wrongFormatArgumentTypeMessage)
-      );
+    it(`should trow a TypeError if first "format" argument is a undefined`, () => {
+      expect(() => unitTestingTask(undefined, mockedDate)).toThrow(TypeError);
     });
 
-    it(`should trow a TypeError "${wrongFormatArgumentTypeMessage}" if first "format" argument is an empty string`, () => {
-      expect(() => unitTestingTask("", mockedDate)).toThrow(
-        new TypeError(wrongFormatArgumentTypeMessage)
-      );
+    it(`should trow a TypeError if first "format" argument is an object`, () => {
+      expect(() => unitTestingTask({}, mockedDate)).toThrow(TypeError);
     });
 
-    it(`should throw an error "${incorrectDateArgumentTypeMessage}" if second "date" argument is null`, () => {
-      expect(() => unitTestingTask(mockedFormat, null)).toThrow(
+    it(`should trow a TypeError if first "format" argument is an empty string`, () => {
+      expect(() => unitTestingTask("", mockedDate)).toThrow(TypeError);
+    });
+
+    it(`should throw an error "${incorrectDateArgumentTypeMessage}" if second "date" argument is is not instance of Date or Unix Timestamp or ISODate String`, () => {
+      expect(() => unitTestingTask(formatStub, null)).toThrow(
         new TypeError(incorrectDateArgumentTypeMessage)
       );
     });
 
-    it(`should throw an error "${incorrectDateArgumentTypeMessage}" if second "date" argument is object`, () => {
-      expect(() => unitTestingTask(mockedFormat, {})).toThrow(
-        new TypeError(incorrectDateArgumentTypeMessage)
-      );
+    it(`should throw an TypeError error if second "date" argument is null`, () => {
+      expect(() => unitTestingTask(formatStub, null)).toThrow(TypeError);
     });
 
-    it(`should throw an error "${incorrectDateArgumentTypeMessage}" if second "date" argument is array`, () => {
-      expect(() => unitTestingTask(mockedFormat, [])).toThrow(
-        new TypeError(incorrectDateArgumentTypeMessage)
-      );
+    it(`should throw an error if second "date" argument is object`, () => {
+      expect(() => unitTestingTask(formatStub, {})).toThrow(TypeError);
+    });
+
+    it(`should throw an error if second "date" argument is array`, () => {
+      expect(() => unitTestingTask(formatStub, [])).toThrow(TypeError);
     });
   });
 
   describe("called with correct arguments", () => {
     it("should not throw error with correct argument", () => {
-      expect(() => unitTestingTask(mockedFormat, mockedDate)).not.toThrow();
+      expect(() => unitTestingTask(formatStub, mockedDate)).not.toThrow();
     });
 
     it("should not throw error if 'format' argument is passed as dummy string", () => {
@@ -84,15 +88,15 @@ describe("unitTestingTask function", () => {
     });
 
     it("should not throw error if 'date' argument is passed as dummy string", () => {
-      expect(() => unitTestingTask(mockedFormat, "dummy string")).not.toThrow();
+      expect(() => unitTestingTask(formatStub, "dummy string")).not.toThrow();
     });
 
     it("should not throw error if 'date' argument is passed as dummy number", () => {
-      expect(() => unitTestingTask(mockedFormat, 12345)).not.toThrow();
+      expect(() => unitTestingTask(formatStub, 12345)).not.toThrow();
     });
   });
 
-  describe("year formats", () => {
+  describe("called with different year formats", () => {
     it("should return 2023 if passed format YYYY", () => {
       expect(unitTestingTask("YYYY", mockedDate)).toBe("2023");
     });
@@ -102,7 +106,7 @@ describe("unitTestingTask function", () => {
     });
   });
 
-  describe("month formats", () => {
+  describe("called with different month formats", () => {
     it.concurrent.each([
       ["MMMM", "January"],
       ["MMM", "Jan"],
@@ -113,7 +117,7 @@ describe("unitTestingTask function", () => {
     });
   });
 
-  describe("day formats", () => {
+  describe("called with different day formats", () => {
     it.concurrent.each([
       ["DDD", "Monday"],
       ["DD", "Mon"],
@@ -125,7 +129,7 @@ describe("unitTestingTask function", () => {
     });
   });
 
-  describe("hours formats", () => {
+  describe("called with different hours formats", () => {
     it.concurrent.each([
       ["HH", "05"],
       ["H", "5"],
@@ -136,7 +140,7 @@ describe("unitTestingTask function", () => {
     });
   });
 
-  describe("minutes formats", () => {
+  describe("called with different minutes formats", () => {
     it.concurrent.each([
       ["mm", "09"],
       ["m", "9"],
@@ -145,7 +149,7 @@ describe("unitTestingTask function", () => {
     });
   });
 
-  describe("seconds formats", () => {
+  describe("called with different seconds formats", () => {
     it.concurrent.each([
       ["ss", "03"],
       ["s", "3"],
@@ -154,7 +158,7 @@ describe("unitTestingTask function", () => {
     });
   });
 
-  describe("milliseconds formats", () => {
+  describe("called with different milliseconds formats", () => {
     it.concurrent.each([
       ["ff", "023"],
       ["f", "23"],
@@ -163,7 +167,7 @@ describe("unitTestingTask function", () => {
     });
   });
 
-  describe("AM/PM formats", () => {
+  describe("called with different AM/PM formats", () => {
     const pmTimeMockedDate =
       "Mon Jan 23 2023 15:09:03:0023 GMT+0200 (Eastern European Standard Time)";
     it.concurrent.each([
@@ -181,7 +185,7 @@ describe("unitTestingTask function", () => {
     });
   });
 
-  describe("timezones formats", () => {
+  describe("called with different timezones formats", () => {
     it.concurrent.each([
       ["ZZ", "+0200"],
       ["Z", "+02:00"],

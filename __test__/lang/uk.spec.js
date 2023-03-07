@@ -13,9 +13,8 @@ describe("unitTestingTask language - uk", () => {
   describe("should have correct translation for the following format", () => {
     const mockedDate =
       "Mon Jan 23 2023 05:09:03:0023 GMT+0200 (Eastern European Standard Time)";
-    const mockedFormat = "DD-MM-YYYY";
 
-    describe("month formats", () => {
+    describe("called with different month formats", () => {
       it.concurrent.each([
         ["MMMM", "січень"],
         ["MMM", "січ"],
@@ -25,7 +24,7 @@ describe("unitTestingTask language - uk", () => {
       });
     });
 
-    describe("weekdays formats", () => {
+    describe("called with different weekdays formats", () => {
       it.concurrent.each([
         ["DDD", "понеділок"],
         ["DD", "пн"],
@@ -35,7 +34,7 @@ describe("unitTestingTask language - uk", () => {
       });
     });
 
-    describe("time meridiem formats", () => {
+    describe("called with different time meridiem formats", () => {
       it("should returnt 'HH ночі', if hour is before 4", () => {
         const mockedDateNightTime =
           "Mon Jan 23 2023 02:09:03:0023 GMT+0200 (Eastern European Standard Time)";
